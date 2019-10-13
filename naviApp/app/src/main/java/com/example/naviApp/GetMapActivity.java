@@ -1,9 +1,14 @@
 package com.example.naviApp;
 
+import android.app.ActionBar;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,6 +17,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
@@ -20,18 +26,29 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
-import com.squareup.okhttp.Route;
-
 import org.joda.time.DateTime;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+//import org.json.JSONArray;
+//import org.json.JSONException;
+//import org.json.JSONObject;
+
 import androidx.fragment.app.FragmentActivity;
 
-public class GetMapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class GetMapActivity extends FragmentActivity
+    implements OnMapReadyCallback{
 
     private static final int overview = 0;
+    private Polyline[] polyArr = new Polyline[3];
+    private DirectionsResult results;
+    PopupWindow popUp;
+    LinearLayout layout;
+//    LinearLayout mainLayout;
+    TextView tv;
+//    LinearLayout.LayoutParams params;
+//    boolean click = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +58,8 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        popUp = new PopupWindow();
 
     }
 
@@ -80,7 +99,7 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
 //            Log.d("MAP", arr[0].toString());
 //            Log.d("MAP", arr[1].toString());
 
-            DirectionsResult results = getDirectionsDetails(arr[0].getAddressLine(0),"18115 Campus Way NE Bothell WA 98011",TravelMode.DRIVING);
+            results = getDirectionsDetails(arr[0].getAddressLine(0),"18115 Campus Way NE Bothell WA 98011",TravelMode.DRIVING);
             if (results != null) {
                 addPolyline(results, googleMap);
                 positionCamera(results.routes[overview], googleMap);
@@ -91,6 +110,43 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
             e.printStackTrace();
         }
 
+        googleMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener()
+        {
+            @Override
+            public void onPolylineClick(Polyline polyline)
+            {
+                // return String?
+                int index = 0;
+                for(int i = 0; i < 3; i ++){
+                    if(polyArr[i] == polyline){
+                        index = i;
+                    }
+                }
+//        results.routes[0].legs[0].distance
+                //        stations = response.getJSONArray("stations");
+                double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters;
+                double distanceMiles = 0.621371 * distanceKilometers;
+                double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
+
+                String gasInfo = "Gas costs: $" + gasCost;
+
+//                popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+//                popUp.update(50, 50, 330, 80);
+
+
+                tv.setText(gasInfo);
+                layout.setOrientation((LinearLayout.VERTICAL));
+                popUp = new PopupWindow(tv, 80, 50, true);
+                popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+                Log.d("whut", "here");
+
+//                params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
+//                layout.addView(tv, params);
+//                popUp.setContentView(layout);
+//                setContentView(mainLayout);
+            }
+        });
 
     }
 
@@ -120,13 +176,13 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     private void addPolyline(DirectionsResult results, GoogleMap mMap) {
-        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
-        mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+//        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
+//        PomMap.addPolyline(new PolylineOptions().addAll(decodedPath));
 
         for(int i = 0; i < 3; i++){
             if(results.routes[i]!=null) {
                 List<LatLng> decodedPath2 = PolyUtil.decode(results.routes[i].overviewPolyline.getEncodedPath());
-                mMap.addPolyline(new PolylineOptions().addAll(decodedPath2));
+                polyArr[i] = mMap.addPolyline(new PolylineOptions().addAll(decodedPath2).clickable(true).width(30));
             }
         }
     }
@@ -144,6 +200,39 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
                 .setReadTimeout(1, TimeUnit.SECONDS)
                 .setWriteTimeout(1, TimeUnit.SECONDS);
     }
+
+//    @Override
+//    public void onPolylineClick(Polyline polyline) {
+//        // return String?
+//        int index = 0;
+//        for(int i = 0; i < 3; i ++){
+//            if(polyArr[i] == polyline){
+//                index = i;
+//            }
+//        }
+////        results.routes[0].legs[0].distance
+//        //        stations = response.getJSONArray("stations");
+//        double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters;
+//        double distanceMiles = 0.621371 * distanceKilometers;
+//        double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
+//
+//        String gasInfo = "Gas costs: $" + gasCost;
+//
+//        popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+//        popUp.update(50, 50, 300, 80);
+//        Log.d("whut", "here");
+//
+//        params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+//        layout.setOrientation((LinearLayout.VERTICAL));
+//        tv.setText(gasInfo);
+//        layout.addView(tv, params);
+//        popUp.setContentView(layout);
+//        setContentView(mainLayout);
+//
+//
+//
+//    }
+
 
 
 //    public void getRouteWithLowestGas() {
