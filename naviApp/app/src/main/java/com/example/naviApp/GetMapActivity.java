@@ -83,7 +83,8 @@ public class GetMapActivity extends FragmentActivity
 //            Log.d("MAP", arr[0].toString());
 //            Log.d("MAP", arr[1].toString());
 
-            results = getDirectionsDetails(arr[0].getAddressLine(0),"18115 Campus Way NE Bothell WA 98011",TravelMode.DRIVING);
+            results = getDirectionsDetails(arr[0].getAddressLine(0), Constants.destination,TravelMode.DRIVING);
+
             if (results != null) {
                 addPolyline(results, googleMap);
                 positionCamera(results.routes[overview], googleMap);
@@ -109,8 +110,10 @@ public class GetMapActivity extends FragmentActivity
                 }
 //        results.routes[0].legs[0].distance
                 //        stations = response.getJSONArray("stations");
+
                 double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters;
                 double distanceMiles = 0.621371 * distanceKilometers / 1000.0;
+
                 double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
                 gasCost = Math.round(gasCost * 100.0) / 100.0;
                 String gasInfo = "Gas costs: $" + gasCost;

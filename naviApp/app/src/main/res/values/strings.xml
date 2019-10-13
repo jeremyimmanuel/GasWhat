@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">NaviApp</string>
-    <string name="make">Volkswagen</string>
-    <string name="model">Jetta</string>
-    <string name="year">2006</string>
+    <string name="make">Make</string>
+    <string name="model">Model</string>
+    <string name="year">Year</string>
     <string name="title_activity_get_map">Map</string>
+    <string name="input_destination_here">Where to?</string>
+    <string name="destination">Destination</string>
     <string name="title_activity_first_page">FirstPage</string>
 </resources>
