@@ -4,36 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".getVehicle">
+    tools:context=".getMPG">
 
-    <Spinner
-        android:id="@+id/vehicleSpinner"
-        android:layout_width="379dp"
+    <TextView
+        android:id="@+id/mpgList"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:spinnerMode="dropdown"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/toMaps"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/getGas"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.758" />
+        app:layout_constraintVertical_bias="0.144" />
 
     <Button
-        android:id="@+id/toMaps"
+        android:id="@+id/getGas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="296dp"
-        android:onClick="enterMPG"
+        android:layout_marginBottom="200dp"
+        android:onClick="enterGetGasPrice"
         android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

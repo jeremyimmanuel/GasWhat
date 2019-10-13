@@ -24,30 +24,25 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
-public class getVehicle extends AppCompatActivity {
+public class getMPG extends AppCompatActivity {
 
-    Hashtable<String, String> vehicles = new Hashtable<String, String>();
-    String[] vehicleKeys;
-    Spinner vehicleChoices;
+    String result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_get_vehicle);
-        vehicleChoices = (Spinner) findViewById(R.id.vehicleSpinner);
+        setContentView(R.layout.activity_get_mpg);
 
-//        final TextView textView = (TextView) findViewById(R.id.vehicleChoices);
-        // ...
+        final TextView textView = (TextView) findViewById(R.id.mpgList);
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = Constants.fuelEconomyURL;
-        url = url + "vehicle/menu/options?year=" + Constants.year + "&make=" +
-            Constants.make + "&model=" + Constants.model;
+//        Log.d("URL", Constants.vehicleID);
+        url = url + "vehicle/" + Constants.vehicleID;
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -56,13 +51,12 @@ public class getVehicle extends AppCompatActivity {
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
                         parseXML(response);
-
-//                        textView.setText(result);
+                        textView.setText(result);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                textView.setText("That didn't work!");
+                textView.setText("That didn't work!");
             }
         });
 
@@ -91,8 +85,8 @@ public class getVehicle extends AppCompatActivity {
 
     private void processParsing(XmlPullParser parser) throws IOException, XmlPullParserException{
         int eventType = parser.getEventType();
-        String currentVehicle = null;
-        String currentID = null;
+//        String currentMPH = null;
+//        String currentHighwayMPH = null;
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
             String eltName = null;
@@ -100,19 +94,14 @@ public class getVehicle extends AppCompatActivity {
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     eltName = parser.getName();
-//                    Log.d("STATE", eltName);
 
-                    if ("text".equals(eltName)) {
-                        currentVehicle = parser.nextText();
-//                        Log.d("STATE", eltName);
+                    if ("city08".equals(eltName)) {
+                        Constants.cityMPH = parser.nextText();
 
-                    } else if (currentVehicle != null) {
-                        if ("value".equals(eltName)) {
-                            currentID = parser.nextText();
-//                            Log.d("STATE", eltName);
-                            vehicles.put(currentVehicle, currentID);
-                        }
+                    } else if ("highway08".equals(eltName)) {
+                        Constants.highwayMPH = parser.nextText();
                     }
+
 
                     break;
             }
@@ -120,26 +109,19 @@ public class getVehicle extends AppCompatActivity {
             eventType = parser.next();
         }
 
-        printVehicles(vehicles);
+        printMPH();
     }
 
-    private void printVehicles(Hashtable<String, String> vehicles) {
-
-        Set<String> keys = vehicles.keySet();
-        vehicleKeys = keys.toArray(new String[keys.size()]);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (this,android.R.layout.simple_spinner_item, vehicleKeys);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        vehicleChoices.setAdapter(adapter);
+    private void printMPH() {
+        result = "CITY MPH = " + Constants.cityMPH + "\n" + "HIGHWAY MPH = " + Constants.highwayMPH;
     }
 
-    public void enterMPG(View view){
+    public void enterGetGasPrice(View view){
 //        String key = vehicleChoices.getSelectedItem().toString();
-        Log.d("GAS", vehicles.get(vehicleChoices.getSelectedItem().toString()));
-        Constants.vehicleID = vehicles.get(vehicleChoices.getSelectedItem().toString());
+//        Constants.vehicleID = vehicles.get(vehicleChoices.getSelectedItemPosition());
 
-        Intent getMPGIntent = new Intent(this, getMPG.class);
-        startActivity(getMPGIntent);
+//        Intent getGasIntent = new Intent(this, getGasPrice.class);
+//        startActivity(getGasIntent);
+
     }
 }
