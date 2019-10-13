@@ -2,6 +2,7 @@ package com.example.naviApp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -11,8 +12,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+
+
+import android.content.Intent;
+
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,9 +105,11 @@ public class gasPriceActivity extends AppCompatActivity {
         String url = Constants.gasPriceURL;
 
 //        Log.d("URL", Constants.vehicleID);
+
         //String latitude = "47.608013";
         //String longitude = "-122.335167";
         String distance = "30"; // in miles
+
         String fuelType = "reg"; // option among reg, mid, diesel and pre
         String sortBy = "distance";
         averageGasPrice = -1.0;
@@ -139,6 +147,9 @@ public class gasPriceActivity extends AppCompatActivity {
                             result = "Close gas stations cost in average = $" + averageGasPrice;
                             textView.setText(result);
 
+                            Constants.gasPrice = averageGasPrice;
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -156,6 +167,7 @@ public class gasPriceActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -167,4 +179,13 @@ public class gasPriceActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void enterMap(View view){
+
+        Intent getMapIntent = new Intent(this, GetMapActivity.class);
+        startActivity(getMapIntent);
+
+    }
+
+
 }
