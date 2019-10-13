@@ -1,15 +1,8 @@
 package com.example.naviApp;
 
-import android.app.ActionBar;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,11 +23,6 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-//import org.json.JSONArray;
-//import org.json.JSONException;
-//import org.json.JSONObject;
-
 import androidx.fragment.app.FragmentActivity;
 
 public class GetMapActivity extends FragmentActivity
@@ -43,12 +31,7 @@ public class GetMapActivity extends FragmentActivity
     private static final int overview = 0;
     private Polyline[] polyArr = new Polyline[3];
     private DirectionsResult results;
-    PopupWindow popUp;
-    LinearLayout layout;
-//    LinearLayout mainLayout;
-    TextView tv;
-//    LinearLayout.LayoutParams params;
-//    boolean click = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +42,6 @@ public class GetMapActivity extends FragmentActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        popUp = new PopupWindow();
 
     }
 
@@ -130,21 +112,6 @@ public class GetMapActivity extends FragmentActivity
 
                 String gasInfo = "Gas costs: $" + gasCost;
 
-//                popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
-//                popUp.update(50, 50, 330, 80);
-
-
-                tv.setText(gasInfo);
-                layout.setOrientation((LinearLayout.VERTICAL));
-                popUp = new PopupWindow(tv, 80, 50, true);
-                popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
-                Log.d("whut", "here");
-
-//                params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-
-//                layout.addView(tv, params);
-//                popUp.setContentView(layout);
-//                setContentView(mainLayout);
             }
         });
 
