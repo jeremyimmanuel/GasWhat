@@ -109,10 +109,6 @@ public class getGasPrice extends Context {
                             e.printStackTrace();
                         }
 
-
-
-
-
                     }
                 }, new Response.ErrorListener() {
 
@@ -128,8 +124,11 @@ public class getGasPrice extends Context {
         return gasDollar;
     }
 
-    public double getDollarGas() {
 
+
+    public double getDollarGas() {
+//        Log.d("bruh", "" + gasDollar);
+//        System.out.println("" + gasDollar);
         return calculateGasPrice();
     }
 
