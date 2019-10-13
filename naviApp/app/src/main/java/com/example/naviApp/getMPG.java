@@ -116,12 +116,13 @@ public class getMPG extends AppCompatActivity {
         result = "CITY MPH = " + Constants.cityMPH + "\n" + "HIGHWAY MPH = " + Constants.highwayMPH;
     }
 
-    public void enterGetGasPrice(View view){
-//        String key = vehicleChoices.getSelectedItem().toString();
-//        Constants.vehicleID = vehicles.get(vehicleChoices.getSelectedItemPosition());
 
-//        Intent getGasIntent = new Intent(this, getGasPrice.class);
-//        startActivity(getGasIntent);
+    public void enterGetGasPrice(View view){
+        //String key = vehicleChoices.getSelectedItem().toString();
+        //Constants.vehicleID = vehicles.get(vehicleChoices.getSelectedItemPosition());
+
+        Intent getGasIntent = new Intent(this, gasPriceActivity.class);
+        startActivity(getGasIntent);
 
     }
 }

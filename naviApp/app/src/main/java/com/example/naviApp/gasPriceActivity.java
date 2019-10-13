@@ -40,6 +40,7 @@ public class gasPriceActivity extends AppCompatActivity {
         String latitude = "47.608013";
         String longitude = "-122.335167";
         String distance = "30"; // in miles
+
         String fuelType = "reg"; // option among reg, mid, diesel and pre
         String sortBy = "distance";
         averageGasPrice = -1.0;
@@ -95,7 +96,9 @@ public class gasPriceActivity extends AppCompatActivity {
                             averageGasPrice = Math.round(averageGasPrice * 100.0) / 100.0;
                             result = "Close gas stations cost in average = $" + averageGasPrice;
                             textView.setText(result);
+
                             Constants.gasPrice = averageGasPrice;
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();

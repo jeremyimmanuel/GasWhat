@@ -17,9 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-<<<<<<< Updated upstream
-        <activity android:name=".getMPG"></activity>
-=======
+
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -35,10 +33,9 @@
 
         <activity
             android:name=".GetMapActivity"
-            android:label="@string/title_activity_get_map"></activity>
-        <activity android:name=".gasPriceActivity" />
+            android:label="@string/title_activity_get_map"/>
+        <activity android:name=".gasPriceActivity"/>
         <activity android:name=".getMPG" />
->>>>>>> Stashed changes
         <activity android:name=".getVehicle" />
         <activity android:name=".MainActivity">
             <intent-filter>
