@@ -34,6 +34,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+
 public class gasPriceActivity extends AppCompatActivity {
 
     String result;
@@ -186,6 +188,7 @@ public class gasPriceActivity extends AppCompatActivity {
         startActivity(getMapIntent);
 
     }
+
 
 
 }

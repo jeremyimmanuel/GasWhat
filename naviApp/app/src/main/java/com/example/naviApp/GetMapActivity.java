@@ -3,13 +3,17 @@ package com.example.naviApp;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class GetMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -40,8 +44,26 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        //LatLng sydney = new LatLng(-34, 151);
+        Log.d("inMap", Double.toString(Constants.userLongitude));
+        LatLng userLocation = new LatLng(Constants.userLatitude, Constants.userLongitude);//Constants.userLatitude, Constants.userLongitude);
+        LatLng destination = new LatLng(Constants.destinationLatitude, Constants.destinationLongitude);
+
+        mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker in user Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+        mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
+        /*
+        Polyline p1 = googleMap.addPolyline(new PolylineOptions()
+            .clickable(true)
+            .add(
+                    userLocation,
+                    destination
+            ));
+        p1.setTag("BRUH");*/
+        double midLat = (Constants.userLatitude + Constants.destinationLatitude)/2.0;
+        double midLong = (Constants.userLongitude + Constants.destinationLongitude)/2.0;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(midLat, midLong), 12));
+
+
     }
+
 }
