@@ -11,4 +11,9 @@ public class Constants {
     public static String highwayMPH = "";
     public static String cityMPH = "";
     public static double gasPrice = 0.0;
+<<<<<<< Updated upstream
+=======
+    public static double lowestGasCost = 0.0;
+    public static String destination = "";
+>>>>>>> Stashed changes
 }

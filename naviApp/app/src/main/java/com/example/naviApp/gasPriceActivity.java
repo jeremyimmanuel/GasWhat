@@ -119,10 +119,10 @@ public class gasPriceActivity extends AppCompatActivity {
 
     }
 
-    public void enterMap(View view){
+    public void enterDestination(View view){
 
-        Intent getMapIntent = new Intent(this, GetMapActivity.class);
-        startActivity(getMapIntent);
+        Intent getDestinationIntent = new Intent(this, DestinationActivity.class);
+        startActivity(getDestinationIntent);
 
     }
 
