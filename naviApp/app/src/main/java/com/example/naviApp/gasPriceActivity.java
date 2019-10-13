@@ -1,10 +1,20 @@
 package com.example.naviApp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +32,10 @@ public class gasPriceActivity extends AppCompatActivity {
 
     String result;
     double averageGasPrice;
+    LocationManager lm;
+    LocationListener ll;
+    String latitude;
+    String longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +44,64 @@ public class gasPriceActivity extends AppCompatActivity {
 
         final TextView textView = findViewById(R.id.gasView);
 
+
+        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        ll = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Toast.makeText(gasPriceActivity.this, location.toString(), Toast.LENGTH_SHORT).show();
+                latitude = Double.toString(location.getLatitude());
+                longitude = Double.toString(location.getLongitude());
+                Log.d("lat", latitude);
+                Log.d("longi", longitude);
+                lm.removeUpdates(ll);
+                lm = null;
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        };
+
+        //user hasn't given permission
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        else
+        {
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+            Location userLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            Constants.userLatitude = userLocation.getLatitude();
+            Constants.userLongitude = userLocation.getLongitude();
+
+            latitude = Double.toString(Constants.userLatitude);
+            longitude = Double.toString(Constants.userLongitude);
+        }
+
+
+
+
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = Constants.gasPriceURL;
 
 //        Log.d("URL", Constants.vehicleID);
-        String latitude = "47.608013";
-        String longitude = "-122.335167";
-        String distance = "50"; // in miles
+        //String latitude = "47.608013";
+        //String longitude = "-122.335167";
+        String distance = "30"; // in miles
         String fuelType = "reg"; // option among reg, mid, diesel and pre
         String sortBy = "distance";
         averageGasPrice = -1.0;
@@ -45,25 +109,6 @@ public class gasPriceActivity extends AppCompatActivity {
         url = url + "stations/radius/" + latitude + "/"
                 + longitude + "/" + distance + "/" + fuelType + "/" + sortBy
                 + "/" + Constants.gasAPIkey + ".json?";
-
-        // Request a string response from the provided URL.
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        // Display the first 500 characters of the response string.
-//                        parseXML(response);
-//                        textView.setText(result);
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                textView.setText("That didn't work!");
-//            }
-//        });
-//
-//        // Add the request to the RequestQueue.
-//        queue.add(stringRequest);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -109,8 +154,17 @@ public class gasPriceActivity extends AppCompatActivity {
                 });
 
         queue.add(jsonObjectRequest);
-
-
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            {
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,0, ll);
+            }
+        }
+    }
 }
