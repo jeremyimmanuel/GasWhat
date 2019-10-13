@@ -115,7 +115,7 @@ public class getMPG extends AppCompatActivity {
     }
 
     private void printMPH() {
-        result = "CITY MPH = " + Constants.cityMPG + "\n" + "HIGHWAY MPH = " + Constants.highwayMPG;
+        result = "City MPG = " + Constants.cityMPG + "\n" + "Highway MPG = " + Constants.highwayMPG;
     }
 
 
