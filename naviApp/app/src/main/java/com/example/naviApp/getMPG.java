@@ -96,10 +96,12 @@ public class getMPG extends AppCompatActivity {
                     eltName = parser.getName();
 
                     if ("city08".equals(eltName)) {
-                        Constants.cityMPH = parser.nextText();
+                        Constants.cityMPG = parser.nextText();
 
                     } else if ("highway08".equals(eltName)) {
-                        Constants.highwayMPH = parser.nextText();
+                        Constants.highwayMPG = parser.nextText();
+                    } else if ("comb08".equals(eltName)){
+                        Constants.averageMPG = Double.parseDouble(parser.nextText());
                     }
 
 
@@ -113,7 +115,7 @@ public class getMPG extends AppCompatActivity {
     }
 
     private void printMPH() {
-        result = "CITY MPH = " + Constants.cityMPH + "\n" + "HIGHWAY MPH = " + Constants.highwayMPH;
+        result = "CITY MPH = " + Constants.cityMPG + "\n" + "HIGHWAY MPH = " + Constants.highwayMPG;
     }
 
 

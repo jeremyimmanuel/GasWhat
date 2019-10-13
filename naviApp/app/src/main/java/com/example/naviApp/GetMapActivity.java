@@ -1,30 +1,37 @@
 package com.example.naviApp;
 
-import androidx.fragment.app.FragmentActivity;
-
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
-<<<<<<< Updated upstream
-=======
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.TextView;
->>>>>>> Stashed changes
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
+import org.joda.time.DateTime;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import androidx.fragment.app.FragmentActivity;
 
-public class GetMapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class GetMapActivity extends FragmentActivity
+    implements OnMapReadyCallback{
 
-    private GoogleMap mMap;
+    private static final int overview = 0;
+    private Polyline[] polyArr = new Polyline[3];
+    private DirectionsResult results;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,28 +41,36 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+    }
+
+    private DirectionsResult getDirectionsDetails(String origin,String destination,TravelMode mode) {
+        DateTime now = new DateTime();
+        try {
+            return DirectionsApi.newRequest(getGeoContext())
+                    .mode(mode)
+                    .origin(origin)
+                    .destination(destination)
+                    .departureTime(now)
+                    .alternatives(true)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
-<<<<<<< Updated upstream
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-=======
         setupGoogleMapScreenSettings(googleMap);
 //        LatLng origin = new LatLng(Constants.userLatitude, Constants.userLongitude);
 //        LatLng destination = new LatLng(47.759138, -122.191164);
@@ -65,8 +80,9 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
             Address[] arr = (Address[]) address.toArray(new Address[0]);
 //            Log.d("MAP", arr[0].toString());
 //            Log.d("MAP", arr[1].toString());
-//            "18115 Campus Way NE Bothell WA 98011"
+
             results = getDirectionsDetails(arr[0].getAddressLine(0), Constants.destination,TravelMode.DRIVING);
+
             if (results != null) {
                 addPolyline(results, googleMap);
                 positionCamera(results.routes[overview], googleMap);
@@ -91,6 +107,7 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
                 }
 //        results.routes[0].legs[0].distance
                 //        stations = response.getJSONArray("stations");
+
                 double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters / 1000;
                 double distanceMiles = 0.621371 * distanceKilometers;
                 double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
@@ -99,6 +116,108 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
 
             }
         });
->>>>>>> Stashed changes
+
     }
+
+
+    private void setupGoogleMapScreenSettings(GoogleMap mMap) {
+        mMap.setBuildingsEnabled(true);
+        mMap.setIndoorEnabled(true);
+        //mMap.setTrafficEnabled(true);
+        UiSettings mUiSettings = mMap.getUiSettings();
+        mUiSettings.setZoomControlsEnabled(true);
+        mUiSettings.setCompassEnabled(true);
+        mUiSettings.setMyLocationButtonEnabled(true);
+        mUiSettings.setScrollGesturesEnabled(true);
+        mUiSettings.setZoomGesturesEnabled(true);
+        mUiSettings.setTiltGesturesEnabled(true);
+        mUiSettings.setRotateGesturesEnabled(true);
+    }
+
+
+    private void addMarkersToMap(DirectionsResult results, GoogleMap mMap) {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview].legs[overview].startLocation.lat,results.routes[overview].legs[overview].startLocation.lng)).title(results.routes[overview].legs[overview].startAddress));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview].legs[overview].endLocation.lat,results.routes[overview].legs[overview].endLocation.lng)).title(results.routes[overview].legs[overview].startAddress).snippet(getEndLocationTitle(results)));
+    }
+
+    private void positionCamera(DirectionsRoute route, GoogleMap mMap) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(route.legs[overview].startLocation.lat, route.legs[overview].startLocation.lng), 12));
+    }
+
+    private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+//        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
+//        PomMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+
+        for(int i = 0; i < 3; i++){
+            if(results.routes[i]!=null) {
+                List<LatLng> decodedPath2 = PolyUtil.decode(results.routes[i].overviewPolyline.getEncodedPath());
+                polyArr[i] = mMap.addPolyline(new PolylineOptions().addAll(decodedPath2).clickable(true).width(30));
+            }
+        }
+    }
+
+    private String getEndLocationTitle(DirectionsResult results){
+        return  "Time :"+ results.routes[overview].legs[overview].duration.humanReadable + " Distance :" + results.routes[overview].legs[overview].distance.humanReadable;
+    }
+
+    private GeoApiContext getGeoContext() {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext
+                .setQueryRateLimit(3)
+                .setApiKey(getString(R.string.google_maps_key))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+//    @Override
+//    public void onPolylineClick(Polyline polyline) {
+//        // return String?
+//        int index = 0;
+//        for(int i = 0; i < 3; i ++){
+//            if(polyArr[i] == polyline){
+//                index = i;
+//            }
+//        }
+////        results.routes[0].legs[0].distance
+//        //        stations = response.getJSONArray("stations");
+//        double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters;
+//        double distanceMiles = 0.621371 * distanceKilometers;
+//        double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
+//
+//        String gasInfo = "Gas costs: $" + gasCost;
+//
+//        popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+//        popUp.update(50, 50, 300, 80);
+//        Log.d("whut", "here");
+//
+//        params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+//        layout.setOrientation((LinearLayout.VERTICAL));
+//        tv.setText(gasInfo);
+//        layout.addView(tv, params);
+//        popUp.setContentView(layout);
+//        setContentView(mainLayout);
+//
+//
+//
+//    }
+
+
+
+//    public void getRouteWithLowestGas() {
+//        // ** pseudo code***
+//        // change void -- probably will return a Route object or Polyline of it
+//        double currMin = Double.MAX_VALUE;
+//        for (Route r : routes) {
+//            double distanceKM = r.getJSONObject("legs").getJSONObject("distance").getJSONObject("value");
+//            double distanceMiles = 0.621371 * distanceKM;
+//            double currCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
+//            if (currMin > currCost) {
+//                currMin = currCost;
+//                // save the Poly line
+//            }
+//        }
+//        Constants.lowestGasCost = currMin;
+//       // return minPolyline;
+//    }
 }
