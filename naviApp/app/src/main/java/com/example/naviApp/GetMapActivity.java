@@ -3,6 +3,7 @@ package com.example.naviApp;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,7 +39,7 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        Log.d("bruh", "Got to onMapReady");
         // Add a marker in Sydney and move the camera
         LatLng user = new LatLng(Constants.userLatitude, Constants.userLongitude);
         mMap.addMarker(new MarkerOptions().position(user).title("Marker on User"));
