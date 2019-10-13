@@ -3,6 +3,8 @@ package com.example.naviApp;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -97,20 +99,22 @@ public class GetMapActivity extends FragmentActivity
             @Override
             public void onPolylineClick(Polyline polyline)
             {
+
                 // return String?
                 int index = 0;
                 for(int i = 0; i < 3; i ++){
-                    if(polyArr[i] == polyline){
+                    if(polyArr[i].getTag() == polyline.getTag()){
                         index = i;
                     }
                 }
 //        results.routes[0].legs[0].distance
                 //        stations = response.getJSONArray("stations");
                 double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters;
-                double distanceMiles = 0.621371 * distanceKilometers;
+                double distanceMiles = 0.621371 * distanceKilometers / 1000.0;
                 double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
-
+                gasCost = Math.round(gasCost * 100.0) / 100.0;
                 String gasInfo = "Gas costs: $" + gasCost;
+                Toast.makeText(getApplicationContext(), gasInfo, Toast.LENGTH_LONG).show();
 
             }
         });
@@ -150,6 +154,7 @@ public class GetMapActivity extends FragmentActivity
             if(results.routes[i]!=null) {
                 List<LatLng> decodedPath2 = PolyUtil.decode(results.routes[i].overviewPolyline.getEncodedPath());
                 polyArr[i] = mMap.addPolyline(new PolylineOptions().addAll(decodedPath2).clickable(true).width(30));
+                polyArr[i].setTag(i);
             }
         }
     }
