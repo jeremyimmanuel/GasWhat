@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -34,72 +35,185 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class gasPriceActivity extends AppCompatActivity {
+public class gasPriceActivity extends AppCompatActivity
+        implements LocationListener {
 
+    Intent intentThatCalled;
+    public static double latitude;
+    public static double longitude;
+    public LocationManager locationManager;
+    public Criteria criteria;
+    public String bestProvider;
+    TextView textView;
     String result;
     double averageGasPrice;
-    LocationManager lm;
-    LocationListener ll;
-    String latitude;
-    String longitude;
+//    LocationManager lm;
+//    LocationListener ll;
+//    String latitude;
+//    String longitud
+//    Location userLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gas_price);
 
-        final TextView textView = findViewById(R.id.gasView);
+        textView = findViewById(R.id.gasView);
+//        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//
+//
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+//        {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//        }
+//
+//
+//        ll = new LocationListener() {
+//            @Override
+//            public void onLocationChanged(Location location) {
+//                Toast.makeText(gasPriceActivity.this, location.toString(), Toast.LENGTH_SHORT).show();
+//
+//                Constants.userLongitude = location.getLongitude();
+//                Constants.userLatitude = location.getLatitude();
+//
+//                latitude = Double.toString(location.getLatitude());
+//                longitude = Double.toString(location.getLongitude());
+//
+//                Log.d("LATLONG", latitude);
+//                Log.d("LATLONG", longitude);
+//                lm.removeUpdates(ll);
+//                lm = null;
+//
+//                getGasPrices();
+//            }
+//
+//            @Override
+//            public void onStatusChanged(String s, int i, Bundle bundle) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderEnabled(String s) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderDisabled(String s) {
+//
+//            }
+//        };
+//
+//        Location userLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//        if(userLocation == null){
+//            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, ll);
+//        }
+//
+//        //user hasn't given permission
+//
+////        else
+////        {
+////
+////
+////
+////        Constants.userLatitude = userLocation.getLatitude();
+////        Constants.userLongitude = userLocation.getLongitude();
+////
+////        latitude = Double.toString(Constants.userLatitude);
+////        longitude = Double.toString(Constants.userLongitude);
+////
+////        }
+//
+//
+//
+//
+        getLocation();
 
 
-        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        ll = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Toast.makeText(gasPriceActivity.this, location.toString(), Toast.LENGTH_SHORT).show();
-                latitude = Double.toString(location.getLatitude());
-                longitude = Double.toString(location.getLongitude());
-                Log.d("lat", latitude);
-                Log.d("longi", longitude);
-                lm.removeUpdates(ll);
-                lm = null;
+    }
+
+    private void getLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            criteria = new Criteria();
+            bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true));
+            Location location = locationManager.getLastKnownLocation(bestProvider);
+            if (location != null) {
+
+                Log.e("TAG", "GPS is on");
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+
+                Constants.userLatitude = latitude;
+                Constants.userLongitude = longitude;
+
+                Toast.makeText(this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+                getGasPrices();
             }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
+            else{
+//                Log.e("TEST", "here");
+                locationManager.requestLocationUpdates(bestProvider, 2000, 0, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, this);
             }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
-
-        //user hasn't given permission
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
         else
         {
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
-            Location userLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            Constants.userLatitude = userLocation.getLatitude();
-            Constants.userLongitude = userLocation.getLongitude();
-
-            latitude = Double.toString(Constants.userLatitude);
-            longitude = Double.toString(Constants.userLongitude);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(this);
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        //Hey, a non null location! Sweet!
+
+        //remove location callback:
+        locationManager.removeUpdates(this);
+
+        //open the map:
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
+        Constants.userLatitude = latitude;
+        Constants.userLongitude = longitude;
+
+        Log.d("LONGLAT", "" + latitude);
+        Log.d("LONGLAT", "" + longitude);
+        getGasPrices();
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 
 
+    private void getGasPrices() {
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -114,6 +228,9 @@ public class gasPriceActivity extends AppCompatActivity {
         String fuelType = "reg"; // option among reg, mid, diesel and pre
         String sortBy = "distance";
         averageGasPrice = -1.0;
+
+        Log.d("LATLONG", "" + latitude);
+        Log.d("LATLONG", "" + longitude);
 
         url = url + "stations/radius/" + latitude + "/"
                 + longitude + "/" + distance + "/" + fuelType + "/" + sortBy
@@ -166,20 +283,23 @@ public class gasPriceActivity extends AppCompatActivity {
                 });
 
         queue.add(jsonObjectRequest);
+
+        Log.d("LATLONG", "" + latitude);
+        Log.d("LATLONG", "" + longitude);
     }
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-        {
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            {
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,0, ll);
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+//        {
+//            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+//            {
+//                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,0, ll);
+//            }
+//        }
+//    }
 
     public void enterMap(View view){
 
