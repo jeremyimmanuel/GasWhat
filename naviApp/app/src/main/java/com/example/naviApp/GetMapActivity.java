@@ -85,7 +85,7 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
                 addPolyline(results, googleMap);
                 positionCamera(results.routes[overview], googleMap);
                 addMarkersToMap(results, googleMap);
-//                results.routes[]
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -98,7 +98,7 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
     private void setupGoogleMapScreenSettings(GoogleMap mMap) {
         mMap.setBuildingsEnabled(true);
         mMap.setIndoorEnabled(true);
-        mMap.setTrafficEnabled(true);
+        //mMap.setTrafficEnabled(true);
         UiSettings mUiSettings = mMap.getUiSettings();
         mUiSettings.setZoomControlsEnabled(true);
         mUiSettings.setCompassEnabled(true);
@@ -122,6 +122,13 @@ public class GetMapActivity extends FragmentActivity implements OnMapReadyCallba
     private void addPolyline(DirectionsResult results, GoogleMap mMap) {
         List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
         mMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+
+        for(int i = 0; i < 3; i++){
+            if(results.routes[i]!=null) {
+                List<LatLng> decodedPath2 = PolyUtil.decode(results.routes[i].overviewPolyline.getEncodedPath());
+                mMap.addPolyline(new PolylineOptions().addAll(decodedPath2));
+            }
+        }
     }
 
     private String getEndLocationTitle(DirectionsResult results){
