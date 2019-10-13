@@ -4,4 +4,5 @@
     <string name="model">Jetta</string>
     <string name="year">2006</string>
     <string name="title_activity_get_map">Map</string>
+    <string name="title_activity_first_page">FirstPage</string>
 </resources>
