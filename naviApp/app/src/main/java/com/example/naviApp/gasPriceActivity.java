@@ -289,22 +289,11 @@ public class gasPriceActivity extends AppCompatActivity
     }
 
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-//        {
-//            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//            {
-//                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,0, ll);
-//            }
-//        }
-//    }
+    public void enterDestination(View view){
 
-    public void enterMap(View view){
 
-        Intent getMapIntent = new Intent(this, GetMapActivity.class);
-        startActivity(getMapIntent);
+        Intent getDestinationIntent = new Intent(this, DestinationActivity.class);
+        startActivity(getDestinationIntent);
 
     }
 

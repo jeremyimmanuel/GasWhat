@@ -15,4 +15,6 @@ public class Constants {
     public static double averageMPG = 0.0;
     public static double gasPrice = 0.0;
     public static double lowestGasCost = 0.0;
+    public static String destination = "";
+
 }
