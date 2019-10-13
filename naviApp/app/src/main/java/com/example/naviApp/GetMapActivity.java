@@ -3,6 +3,7 @@ package com.example.naviApp;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -80,7 +81,7 @@ public class GetMapActivity extends FragmentActivity
         try {
             List address = new Geocoder(this).getFromLocation(Constants.userLatitude, Constants.userLongitude, 1);
             Address[] arr = (Address[]) address.toArray(new Address[0]);
-//            Log.d("MAP", arr[0].toString());
+            Log.d("MAP", arr[0].toString());
 //            Log.d("MAP", arr[1].toString());
 
             results = getDirectionsDetails(arr[0].getAddressLine(0), Constants.destination,TravelMode.DRIVING);
@@ -103,7 +104,7 @@ public class GetMapActivity extends FragmentActivity
 
                 // return String?
                 int index = 0;
-                for(int i = 0; i < 3; i ++){
+                for(int i = 0; i < 3 && i < results.routes.length; i++ ){
                     if(polyArr[i].getTag() == polyline.getTag()){
                         index = i;
                     }
@@ -146,19 +147,20 @@ public class GetMapActivity extends FragmentActivity
     }
 
     private void positionCamera(DirectionsRoute route, GoogleMap mMap) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(route.legs[overview].startLocation.lat, route.legs[overview].startLocation.lng), 12));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(route.legs[overview].startLocation.lat, route.legs[overview].startLocation.lng), 12));
+        double midLat = (Constants.userLatitude + route.legs[overview].endLocation.lat)/2.0;
+        double midLong = (Constants.userLongitude + route.legs[overview].endLocation.lng)/2.0;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(midLat, midLong), 10));
     }
 
     private void addPolyline(DirectionsResult results, GoogleMap mMap) {
 //        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
 //        PomMap.addPolyline(new PolylineOptions().addAll(decodedPath));
 
-        for(int i = 0; i < 3; i++){
-            if(results.routes[i]!=null) {
-                List<LatLng> decodedPath2 = PolyUtil.decode(results.routes[i].overviewPolyline.getEncodedPath());
-                polyArr[i] = mMap.addPolyline(new PolylineOptions().addAll(decodedPath2).clickable(true).width(30));
-                polyArr[i].setTag(i);
-            }
+        for(int i = 0; i < 3 && i < results.routes.length; i++){
+            List<LatLng> decodedPath2 = PolyUtil.decode(results.routes[i].overviewPolyline.getEncodedPath());
+            polyArr[i] = mMap.addPolyline(new PolylineOptions().addAll(decodedPath2).clickable(true).width(30));
+            polyArr[i].setTag(i);
         }
     }
 
@@ -176,54 +178,4 @@ public class GetMapActivity extends FragmentActivity
                 .setWriteTimeout(1, TimeUnit.SECONDS);
     }
 
-//    @Override
-//    public void onPolylineClick(Polyline polyline) {
-//        // return String?
-//        int index = 0;
-//        for(int i = 0; i < 3; i ++){
-//            if(polyArr[i] == polyline){
-//                index = i;
-//            }
-//        }
-////        results.routes[0].legs[0].distance
-//        //        stations = response.getJSONArray("stations");
-//        double distanceKilometers = (double)results.routes[index].legs[0].distance.inMeters;
-//        double distanceMiles = 0.621371 * distanceKilometers;
-//        double gasCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
-//
-//        String gasInfo = "Gas costs: $" + gasCost;
-//
-//        popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
-//        popUp.update(50, 50, 300, 80);
-//        Log.d("whut", "here");
-//
-//        params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-//        layout.setOrientation((LinearLayout.VERTICAL));
-//        tv.setText(gasInfo);
-//        layout.addView(tv, params);
-//        popUp.setContentView(layout);
-//        setContentView(mainLayout);
-//
-//
-//
-//    }
-
-
-
-//    public void getRouteWithLowestGas() {
-//        // ** pseudo code***
-//        // change void -- probably will return a Route object or Polyline of it
-//        double currMin = Double.MAX_VALUE;
-//        for (Route r : routes) {
-//            double distanceKM = r.getJSONObject("legs").getJSONObject("distance").getJSONObject("value");
-//            double distanceMiles = 0.621371 * distanceKM;
-//            double currCost = (distanceMiles / Constants.averageMPG) * Constants.gasPrice;
-//            if (currMin > currCost) {
-//                currMin = currCost;
-//                // save the Poly line
-//            }
-//        }
-//        Constants.lowestGasCost = currMin;
-//       // return minPolyline;
-//    }
 }

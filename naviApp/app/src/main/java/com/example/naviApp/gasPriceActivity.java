@@ -59,74 +59,6 @@ public class gasPriceActivity extends AppCompatActivity
         setContentView(R.layout.activity_gas_price);
 
         textView = findViewById(R.id.gasView);
-//        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//
-//
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-//        {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-//        }
-//
-//
-//        ll = new LocationListener() {
-//            @Override
-//            public void onLocationChanged(Location location) {
-//                Toast.makeText(gasPriceActivity.this, location.toString(), Toast.LENGTH_SHORT).show();
-//
-//                Constants.userLongitude = location.getLongitude();
-//                Constants.userLatitude = location.getLatitude();
-//
-//                latitude = Double.toString(location.getLatitude());
-//                longitude = Double.toString(location.getLongitude());
-//
-//                Log.d("LATLONG", latitude);
-//                Log.d("LATLONG", longitude);
-//                lm.removeUpdates(ll);
-//                lm = null;
-//
-//                getGasPrices();
-//            }
-//
-//            @Override
-//            public void onStatusChanged(String s, int i, Bundle bundle) {
-//
-//            }
-//
-//            @Override
-//            public void onProviderEnabled(String s) {
-//
-//            }
-//
-//            @Override
-//            public void onProviderDisabled(String s) {
-//
-//            }
-//        };
-//
-//        Location userLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//
-//        if(userLocation == null){
-//            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, ll);
-//        }
-//
-//        //user hasn't given permission
-//
-////        else
-////        {
-////
-////
-////
-////        Constants.userLatitude = userLocation.getLatitude();
-////        Constants.userLongitude = userLocation.getLongitude();
-////
-////        latitude = Double.toString(Constants.userLatitude);
-////        longitude = Double.toString(Constants.userLongitude);
-////
-////        }
-//
-//
-//
-//
         getLocation();
 
 
@@ -147,7 +79,7 @@ public class gasPriceActivity extends AppCompatActivity
                 Constants.userLatitude = latitude;
                 Constants.userLongitude = longitude;
 
-                Toast.makeText(this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
                 getGasPrices();
             }
             else{

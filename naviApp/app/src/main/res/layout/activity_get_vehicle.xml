@@ -34,7 +34,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="296dp"
         android:onClick="enterMPG"
-        android:text="Button"
+        android:text="Continue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
