@@ -95,6 +95,7 @@ public class gasPriceActivity extends AppCompatActivity {
 
             latitude = Double.toString(Constants.userLatitude);
             longitude = Double.toString(Constants.userLongitude);
+
         }
 
 
