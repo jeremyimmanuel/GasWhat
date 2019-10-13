@@ -3,6 +3,8 @@ package com.example.naviApp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -12,14 +14,28 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
+
 public class getVehicle extends AppCompatActivity {
+
+    Hashtable<String, String> vehicles = new Hashtable<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_vehicle);
+        Spinner vehicleChoices = (Spinner) findViewById(R.id.vehicleSpinner)
 
-        final TextView textView = (TextView) findViewById(R.id.vehicleChoices);
+//        final TextView textView = (TextView) findViewById(R.id.vehicleChoices);
         // ...
 
         // Instantiate the RequestQueue.
@@ -34,12 +50,13 @@ public class getVehicle extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        textView.setText("Response is: "+ response.substring(0,500));
+                        parseXML(response);
+//                        textView.setText(result);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                textView.setText("That didn't work!");
+//                textView.setText("That didn't work!");
             }
         });
 
@@ -47,4 +64,68 @@ public class getVehicle extends AppCompatActivity {
         queue.add(stringRequest);
 
     }
+
+    private void parseXML(String xml) {
+        XmlPullParserFactory parserFactory;
+        try {
+            parserFactory = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = parserFactory.newPullParser();
+            InputStream is = new ByteArrayInputStream(xml.getBytes());
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(is, null);
+            processParsing(parser);
+
+        } catch (XmlPullParserException e) {
+
+        } catch (IOException e) {
+        }
+
+//        return null;
+    }
+
+    private void processParsing(XmlPullParser parser) throws IOException, XmlPullParserException{
+        int eventType = parser.getEventType();
+        String currentVehicle = null;
+        String currentID = null;
+
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            String eltName = null;
+
+            switch (eventType) {
+                case XmlPullParser.START_TAG:
+                    eltName = parser.getName();
+//                    Log.d("STATE", eltName);
+
+                    if ("text".equals(eltName)) {
+                        currentVehicle = parser.nextText();
+//                        Log.d("STATE", eltName);
+
+                    } else if (currentVehicle != null) {
+                        if ("value".equals(eltName)) {
+                            currentID = parser.nextText();
+//                            Log.d("STATE", eltName);
+                            vehicles.put(currentVehicle, currentID);
+                        }
+                    }
+
+                    break;
+            }
+
+            eventType = parser.next();
+        }
+
+//        return printVehicles(vehicles);
+    }
+
+//    private void printVehicles(Hashtable<String, String> vehicles) {
+//        String output = "";
+//
+//        Set<String> keys = vehicles.keySet();
+//        for(String key: keys){
+//            output += key;
+//            output += "\n";
+//        }
+//
+//        return output;
+//    }
 }
