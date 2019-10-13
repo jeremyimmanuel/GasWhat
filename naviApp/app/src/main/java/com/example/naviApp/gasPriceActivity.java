@@ -2,8 +2,10 @@ package com.example.naviApp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -37,7 +39,8 @@ public class gasPriceActivity extends AppCompatActivity {
 //        Log.d("URL", Constants.vehicleID);
         String latitude = "47.608013";
         String longitude = "-122.335167";
-        String distance = "50"; // in miles
+        String distance = "30"; // in miles
+
         String fuelType = "reg"; // option among reg, mid, diesel and pre
         String sortBy = "distance";
         averageGasPrice = -1.0;
@@ -94,6 +97,9 @@ public class gasPriceActivity extends AppCompatActivity {
                             result = "Close gas stations cost in average = $" + averageGasPrice;
                             textView.setText(result);
 
+                            Constants.gasPrice = averageGasPrice;
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -110,6 +116,13 @@ public class gasPriceActivity extends AppCompatActivity {
 
         queue.add(jsonObjectRequest);
 
+
+    }
+
+    public void enterMap(View view){
+
+        Intent getMapIntent = new Intent(this, GetMapActivity.class);
+        startActivity(getMapIntent);
 
     }
 

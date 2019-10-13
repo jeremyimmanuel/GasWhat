@@ -10,4 +10,5 @@ public class Constants {
     public static String year = "";
     public static String highwayMPH = "";
     public static String cityMPH = "";
+    public static double gasPrice = 0.0;
 }
