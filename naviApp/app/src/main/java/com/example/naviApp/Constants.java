@@ -10,7 +10,9 @@ public class Constants {
     public static String make = "";
     public static String model = "";
     public static String year = "";
-    public static String highwayMPH = "";
-    public static String cityMPH = "";
+    public static String highwayMPG = "";
+    public static String cityMPG = "";
+    public static double averageMPG = 0.0;
     public static double gasPrice = 0.0;
+    public static double lowestGasCost = 0.0;
 }
