@@ -25,4 +25,4 @@ XML parsing, permissions, json parsing in Java, using APIs, Polyline listeners, 
 Add more features to the app (factors in traffic, polyline changes color when tapped)
 
 ## Note
-Please insert your own google maps API key in 
+Please insert your own google maps API key in naviApp/app/src/debug/res/values/google_maps_api.xml :)
