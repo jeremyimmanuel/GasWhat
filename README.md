@@ -23,3 +23,6 @@ XML parsing, permissions, json parsing in Java, using APIs, Polyline listeners, 
 
 ## What's next for GasWhat
 Add more features to the app (factors in traffic, polyline changes color when tapped)
+
+## Note
+Please insert your own google maps API key in 
